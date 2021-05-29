@@ -1,11 +1,10 @@
 # https://docs.docker.com/compose/
 
-# Not version of Docker, but the version of the docker-compose syntax
-# Check if updating to version 3.8 doesn't break everything
-version: "3.4"
+version: "3.9"
 
 services:
     # Serves the website
-    inception_nginx:
+    nginx:
         image: inception_nginx
-
+        ports:
+            - 8000:443

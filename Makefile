@@ -21,7 +21,7 @@ stop:
 down:		
 					docker-compose -f $(PATH_DOCKER_COMPOSE) down
 
-fclean:		down
-		docker system prune
+fclean:				down
+					docker system prune -f
 
-re:		fclean all
+re:					fclean all
