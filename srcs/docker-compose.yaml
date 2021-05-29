@@ -5,6 +5,16 @@ version: "3.9"
 services:
     # Serves the website
     nginx:
-        image: inception_nginx
+        build: services/nginx
+        container_name: nginx
+        restart : always
         ports:
-            - 8000:443
+            - 443:443
+    wordpress:
+        build: services/wordpress
+        container_name: wordpress
+        restart : always
+        hostname: dda-silv.42.fr.com
+        domainname: dda-silv.42.fr.com
+        ports:
+            - 9000:9000

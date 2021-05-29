@@ -1,27 +1,27 @@
-# Name images
-NAME_NGINX			:=	inception_nginx
+PATH_DOCKER_COMPOSE	:=	srcs/docker-compose.yaml
 
-# Path directory
-PATH_SRCS			:=	srcs
-PATH_NGINX			:=	$(PATH_SRCS)/services/nginx
+all:	up
 
-# Path docker-compose file
-PATH_DOCKER_COMPOSE	:=	$(PATH_SRCS)/docker-compose.yaml
+up:
+		docker-compose -f $(PATH_DOCKER_COMPOSE) up -d --build
 
-all:				build_images
-					docker-compose -f $(PATH_DOCKER_COMPOSE) up
-
-build_images:
-					docker build -t $(NAME_NGINX) $(PATH_NGINX)
-					docker-compose -f $(PATH_DOCKER_COMPOSE) build
+start:		
+		docker-compose -f $(PATH_DOCKER_COMPOSE) start
 
 stop:		
-					docker-compose -f $(PATH_DOCKER_COMPOSE) stop
+		docker-compose -f $(PATH_DOCKER_COMPOSE) stop
 
 down:		
-					docker-compose -f $(PATH_DOCKER_COMPOSE) down
+		docker-compose -f $(PATH_DOCKER_COMPOSE) down
 
-fclean:				down
-					docker system prune -f
+logs:
+		docker-compose -f $(PATH_DOCKER_COMPOSE) logs $(CONTAINER_NAME)
 
-re:					fclean all
+clean:	stop
+
+fclean:	down
+		docker system prune -f
+
+re:		clean all
+
+.PHONY: all up start stop down logs fclean re
