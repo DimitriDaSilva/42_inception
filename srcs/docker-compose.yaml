@@ -7,14 +7,16 @@ services:
     nginx:
         build: services/nginx
         container_name: nginx
+        hostname: dda-silv.42.fr.com
+        domainname: dda-silv.42.fr.com
         restart : always
         ports:
             - 443:443
+        depends_on:
+            - wordpress
     wordpress:
         build: services/wordpress
         container_name: wordpress
         restart : always
-        hostname: dda-silv.42.fr.com
-        domainname: dda-silv.42.fr.com
-        ports:
-            - 9000:9000
+        expose:
+            - 9000
