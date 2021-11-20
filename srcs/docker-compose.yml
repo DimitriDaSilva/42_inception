@@ -1,0 +1,36 @@
+# https://docs.docker.com/compose/
+
+version: "3.9"
+
+services:
+  # Wordpress database with MariaDB (MySQL fork)
+  mariadb:
+    build: requirements/mariadb
+    container_name: mariadb
+    volumes:
+      - ${HOME}/data/mariadb:/var/lib/mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    restart: always
+
+  # Serves the website
+  nginx:
+    build: requirements/nginx
+    container_name: nginx
+    hostname: dda-silv.42.fr.com
+    domainname: dda-silv.42.fr.com
+    restart: always
+    ports:
+      - 443:443
+    depends_on:
+      - wordpress
+
+  wordpress:
+    build: requirements/wordpress
+    container_name: wordpress
+    restart: always
+    expose:
+      - 9000
