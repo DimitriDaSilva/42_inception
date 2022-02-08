@@ -2,7 +2,7 @@ FROM debian:buster
 
 # PhpMyAdmin setup
 
-RUN apt-get update && apt-get -y install wget \
+RUN apt-get clean && apt-get update && apt-get -y install wget \
 										php \
 										php-cli \
 										php-cgi \

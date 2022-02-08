@@ -7,30 +7,68 @@ services:
   mariadb:
     build: requirements/mariadb
     container_name: mariadb
+    init: true
+    restart: always
     volumes:
-      - ${HOME}/data/mariadb:/var/lib/mariadb
+      - wp_db:/var/lib/mariadb
+    expose:
+      - 3306
     environment:
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_DATABASE=wordpress
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    networks:
+      - wp
+
+  # Wordpress client-side configuration
+  wordpress:
+    build: requirements/wordpress
+    container_name: wordpress
+    init: true
     restart: always
+    expose:
+      - 9000
+    networks:
+      - wp
+    volumes:
+      - wp_data:/var/www/html/wordpress
+    depends_on:
+      - mariadb
 
   # Serves the website
   nginx:
     build: requirements/nginx
     container_name: nginx
+    init: true
+    restart: always
     hostname: dda-silv.42.fr.com
     domainname: dda-silv.42.fr.com
-    restart: always
     ports:
       - 443:443
     depends_on:
       - wordpress
+    networks:
+      - wp
+    volumes:
+      - wp_data:/var/www/html/wordpress
 
-  wordpress:
-    build: requirements/wordpress
-    container_name: wordpress
-    restart: always
-    expose:
-      - 9000
+
+networks:
+  wp:
+
+volumes: 
+  wp_db:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/$USER/data/mariadb
+  wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/$USER/data/wordpress
+
+
