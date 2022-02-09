@@ -4,7 +4,7 @@ version: "3.9"
 
 services:
   # Wordpress database with MariaDB (MySQL fork)
-  mariadb:
+  db:
     build: requirements/mariadb
     container_name: mariadb
     init: true
@@ -14,10 +14,11 @@ services:
     expose:
       - 3306
     environment:
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=wordpress
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_DATABASE: ${MARIADB_DB_NAME}
+      - MARIADB_ROOT_USER: ${MARIADB_ROOT_USER}
+      - MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER: ${MARIADB_USER}
+      - MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     networks:
       - wp
 
@@ -34,7 +35,11 @@ services:
     volumes:
       - wp_data:/var/www/html/wordpress
     depends_on:
-      - mariadb
+      - db
+    environment:
+      - WP_NAME: ${MARIADB_DB_NAME}
+      - WP_USER: ${MARIADB_USER}
+      - WP_PASSWORD: ${MARIADB_PASSWORD}
 
   # Serves the website
   nginx:
@@ -42,8 +47,8 @@ services:
     container_name: nginx
     init: true
     restart: always
-    hostname: dda-silv.42.fr.com
-    domainname: dda-silv.42.fr.com
+    hostname: ${DOMAIN_NAME}
+    domainname: ${DOMAIN_NAME}
     ports:
       - 443:443
     depends_on:
@@ -52,7 +57,6 @@ services:
       - wp
     volumes:
       - wp_data:/var/www/html/wordpress
-
 
 networks:
   wp:
